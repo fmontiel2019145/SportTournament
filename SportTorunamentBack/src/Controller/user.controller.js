@@ -42,6 +42,44 @@ function saveUser(req, res) {
   }
 }
 
+function login(req, res) {
+  var params = req.body;
+  User.findOne(
+    {
+      email: params.email,
+    },
+    (err, userFound) => {
+      if (err) return res.status(500).send({ message: "Error en la peticion" });
+
+      if (userFound) {
+        bcrypt.compare(
+          params.password,
+          userFound.password,
+          (err, passVerified) => {
+            if (passVerified) {
+              if (params.getToken === "true") {
+                return res
+                  .status(200)
+                  .send({ token: jwt.createToken(userFound) });
+              } else {
+                userFound.password = undefined;
+                return res.status(200).send({ userFound });
+              }
+            } else {
+              return res
+                .status(401)
+                .send({ message: "Verifica tu correo y contraseña" });
+            }
+          }
+        );
+      } else {
+        return res.status(500).send({ message: "El usuario no existe" });
+      }
+    }
+  );
+}
+
 module.exports = {
   saveUser,
+  login,
 };

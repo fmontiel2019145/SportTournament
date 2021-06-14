@@ -8,6 +8,7 @@ var md_authentication = require("../middlewares/authentication");
 //Routes
 var api = express.Router();
 api.post("/saveUser", userController.saveUser);
+api.post("/login", userController.login);
 
 //Exports
 module.exports = api;
