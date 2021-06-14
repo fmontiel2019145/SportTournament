@@ -8,7 +8,7 @@ var userSchema = Schema({
   email: String,
   user: String,
   password: String,
-  rol: { type: String, default: "CLIENTE" },
+  rol: { type: String, default: "CLIENT" },
 });
 
 module.exports = mongoose.model("users", userSchema);
