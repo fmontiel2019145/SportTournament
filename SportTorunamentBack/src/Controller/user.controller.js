@@ -1,7 +1,8 @@
+"use strict";
 //Imports
 var User = require("../Models/user.model");
 var bcrypt = require("bcrypt-nodejs");
-var jwt = require("../services/jwt");
+var jwt = require("../Service/jwt");
 
 //Registrar Usuarios
 function saveUser(req, res) {
@@ -40,3 +41,7 @@ function saveUser(req, res) {
     return res.status(500).send({ message: "Ingrese todos los parametros" });
   }
 }
+
+module.exports = {
+  saveUser,
+};
