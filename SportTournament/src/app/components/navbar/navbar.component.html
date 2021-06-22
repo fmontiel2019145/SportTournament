@@ -15,7 +15,8 @@
         </li>
       </ul>
     </div>
-    <div>
+    <div *ngIf="_userService.getIdentity()==null;
+    else logedOut">
       <form class="d-flex">
         <ul class="navbar-nav">
           <li class="nav-item">
@@ -27,8 +28,20 @@
         </ul>
       </form>
     </div>
-    <div>
-      usuario
-    </div>
+
+    <ng-template #logedOut>
+      <div >
+        <div class="collapse navbar-collapse" id="navbarNav">
+          <ul class="navbar-nav">
+            <li class="nav-item">
+              <a class="nav-link" routerLink="myCount">{{_userService.getIdentity().user}}</a>
+            </li>
+            <button type="button" class="btn btn-primary btn-sm" (click)="singOff()">Cerrar Sesion</button>
+          </ul>
+        </div>
+
+      </div>
+    </ng-template>
+
   </div>
 </nav>

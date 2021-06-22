@@ -39,5 +39,16 @@ export class UserService {
     }
     return this.token;
   }
+  getIdentity() {
+    var identity2 = JSON.parse(localStorage.getItem('identity'));
+    if (identity2 != 'undefined') {
+      this.identity = identity2;
+    } else {
+      this.identity = null;
+    }
+    return this.identity;
+  }
+
+
 
 }
