@@ -12,15 +12,17 @@
         <form>
           <div class="mb-3">
             <label for="exampleInputEmail1" class="form-label">Email</label>
-            <input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">
+            <input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp"
+            id="inputEmail" name="email" #email="ngModel"[(ngModel)]="userModel.email">
           </div>
           <div class="mb-3">
             <label for="exampleInputPassword1" class="form-label">Password</label>
-            <input type="password" class="form-control" id="exampleInputPassword1">
+            <input type="password" class="form-control" id="exampleInputPassword1"
+            id="inputPassword" name="password" #password="ngModel"[(ngModel)]="userModel.password">
           </div>
         </form>
         <div class="d-grid gap-2 col-8 mx-auto">
-          <button class="btn btn-primary" type="button">Iniciar Sesion</button>
+          <button class="btn btn-primary" type="button" (click)="login()" >Iniciar Sesion</button>
           <button class="btn btn-warning" type="button">Registrarme</button>
         </div>
       </div>
