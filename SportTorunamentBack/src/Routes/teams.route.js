@@ -7,10 +7,10 @@ var md_authentication = require("../middlewares/authentication");
 
 //Routes
 var api = express.Router();
-//api.get("/teams/:idUsuario", md_authentication.ensureAuth, leagueController.getLeagues);
-api.post("/teams/:idUsuario/:idLiga", md_authentication.ensureAuth, leagueController.addTeam);
+api.get("/user/:idUsuario/league/:idLiga/team", md_authentication.ensureAuth, leagueController.getTeams);
+api.post("/user/:idUsuario/league/:idLiga/team", md_authentication.ensureAuth, leagueController.addTeam);
+api.put("/user/:idUsuario/league/:idLiga/team/:idTeam", md_authentication.ensureAuth, leagueController.editTeam);
 /*
-    api.put("/league/:idUsuario/:idLiga", md_authentication.ensureAuth, leagueController.editLeague);
     api.delete("/league/:idUsuario/:idLiga", md_authentication.ensureAuth, leagueController.deleteLeague);
 */
 
