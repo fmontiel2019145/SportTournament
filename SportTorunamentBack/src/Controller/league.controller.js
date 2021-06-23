@@ -2,7 +2,7 @@
 var LeagueModel = require('../Models/league.model');
 
 function getLeagues(req, res){
-    var idUsuario = req.params.idUsuario;
+    var idUsuario = req.user.sub;
     var data = req.user;
 
     if(data.rol == "ADMIN" || (data.rol == "CLIENT" && data.sub == idUsuario)){
@@ -24,7 +24,7 @@ function getLeagues(req, res){
 
 function addLeague(req, res){
     var params =  req.body;
-    var idUsuario = req.params.idUsuario;
+    var idUsuario = req.user.sub;
     var data = req.user;
 
     if(data.rol == "ADMIN" || (data.rol == "CLIENT" && data.sub == idUsuario)){
@@ -44,6 +44,7 @@ function addLeague(req, res){
             }
         });
     }else{
+        console.log(idUsuario)
         res.status(403).send({message: "No puedes agregar una liga"});
     }
 }
