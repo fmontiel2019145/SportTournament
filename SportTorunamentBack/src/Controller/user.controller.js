@@ -84,7 +84,7 @@ function editUser(req, res){
     var dataToken = req.user;
     var params = req.body;
     var idUsuario =  req.params.idUsuario;
-
+ 
     var schemaUpdate = {};
     params.name?schemaUpdate.name=params.name:null;
     params.email?schemaUpdate.email=params.email:null;
