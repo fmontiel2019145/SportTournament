@@ -104,16 +104,18 @@ function editUser(req, res) {
   params.name ? (schemaUpdate.name = params.name) : null;
   params.email ? (schemaUpdate.email = params.email) : null;
   params.user ? (schemaUpdate.name = params.user) : null;
-  params.password ? (schemaUpdate.name = params.password) : null;
+  params.password
+    ? (schemaUpdate.name = bcrypt.hashSync(params.password))
+    : null;
+  params.rol ? (schemaUpdate.rol = params.rol) : null;
 
-<<<<<<< HEAD
   /*
         Verifica si es administrador y si es eso podrá editar cualquier usuario con el id enviado.
         Ahora si es usuario verifica que sea su propia cuenta para poder editar, de lo contrario mandara que no tiene permisos
     */
   if (
     dataToken.rol == "ADMIN" ||
-    (dataToken.rol == "CLIENT" && dataToken._id == idUsuario)
+    (dataToken.rol == "CLIENT" && dataToken.sub == idUsuario)
   ) {
     User.findByIdAndUpdate(
       idUsuario,
@@ -136,39 +138,6 @@ function editUser(req, res) {
   } else {
     res.status(403).send({ message: "No tienes acceso" });
   }
-=======
-function editUser(req, res){
-    var dataToken = req.user;
-    var params = req.body;
-    var idUsuario =  req.params.idUsuario;
- 
-    var schemaUpdate = {};
-    params.name?schemaUpdate.name=params.name:null;
-    params.email?schemaUpdate.email=params.email:null;
-    params.user?schemaUpdate.name=params.user:null;
-    params.password?schemaUpdate.name= bcrypt.hashSync(params.password):null;
-    params.rol?schemaUpdate.rol=params.rol:null;
-    
-    /*
-        Verifica si es administrador y si es eso podrá editar cualquier usuario con el id enviado.
-        Ahora si es usuario verifica que sea su propia cuenta para poder editar, de lo contrario mandara que no tiene permisos
-    */
-    if(dataToken.rol == "ADMIN" || (dataToken.rol == "CLIENT" && dataToken.sub == idUsuario)){
-        User.findByIdAndUpdate(idUsuario, schemaUpdate ,{new: true}, (err, userEdited) => {
-            if(err){
-                res.status(500).send({message : err});
-            }else{
-                if(userEdited){
-                    res.status(200).send(userEdited);
-                }else{
-                    res.status(404).send({message : "No se encontró el usuario para editar"});
-                }
-            }
-        });
-    }else{
-        res.status(403).send({message : "No tienes acceso"});
-    }
->>>>>>> main
 }
 
 //Eliminar usuario
@@ -178,38 +147,20 @@ function deleteUser(req, res) {
 
   if (
     dataToken.rol == "ADMIN" ||
-    (dataToken.rol == "CLIENT" && dataToken._id == idUsuario)
+    (dataToken.rol == "CLIENT" && dataToken.sub == idUsuario)
   ) {
     User.findByIdAndDelete(idUsuario, (err, userDelete) => {
       if (err) return res.status(500).send({ message: "Error en la peticion" });
-      console.log(err);
       if (!userDelete)
         return res
           .status(404)
           .send({ message: "No se ha encontrado el usuario para eliminar" });
 
-<<<<<<< HEAD
       return res.status(200).send({ message: "Usuario eliminado con exito" });
     });
   } else {
     res.status(403).send({ message: "No tienes acceso" });
   }
-=======
-function deleteUser(req, res){
-    var dataToken = req.user;
-    var idUsuario =  req.params.idUsuario;
-
-    if(dataToken.rol == "ADMIN" || (dataToken.rol == "CLIENT" && dataToken.sub == idUsuario)){
-        User.findByIdAndDelete(idUsuario, (err, userDelete)=> {
-            if(err)return res.status(500).send({message:"Error en la peticion"})
-            if(!userDelete)return res.status(404).send({message:'No se ha encontrado el usuario para eliminar'})
-
-            return res.status(200).send({message:'Usuario eliminado con exito'})
-        });
-    }else{
-        res.status(403).send({message : "No tienes acceso"});
-    }
->>>>>>> main
 }
 
 module.exports = {
