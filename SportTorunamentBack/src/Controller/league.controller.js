@@ -96,7 +96,7 @@ function deleteLeague(req, res){
             }
         });
     }else{
-        res.status(403).send({message: "No puedes editar esta liga"});
+        res.status(403).send({message: "No puedes eliminar esta liga"});
     }
 }
 
