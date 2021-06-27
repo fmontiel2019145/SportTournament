@@ -1,4 +1,5 @@
 "use strict";
+const leagueModel = require('../Models/league.model');
 var LeagueModel = require('../Models/league.model');
 
 function getLeagues(req, res){
