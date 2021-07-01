@@ -46,6 +46,7 @@ function saveUser(req, res) {
 //Login
 function login(req, res) {
   var params = req.body;
+  
   User.findOne(
     {
       email: params.email,
@@ -59,14 +60,17 @@ function login(req, res) {
           userFound.password,
           (err, passVerified) => {
             if (passVerified) {
-              if (params.getToken === "true") {
-                return res
-                  .status(200)
-                  .send({ token: jwt.createToken(userFound) });
+              return res.status(200).send({ token: jwt.createToken(userFound),
+              });
+             /* if (params.getToken === "true") {
+                
+                
+
               } else {
+                
                 userFound.password = undefined;
-                return res.status(200).send({ userFound });
-              }
+                return res.status(200).send({ userFound});
+              }*/
             } else {
               return res
                 .status(401)
@@ -77,6 +81,7 @@ function login(req, res) {
       } else {
         return res.status(500).send({ message: "El usuario no existe" });
       }
+      
     }
   );
 }

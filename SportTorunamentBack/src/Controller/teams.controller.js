@@ -41,7 +41,7 @@ function addTeam(req, res){
         });
         teamsModel.countDocuments({},(err,conteo)=>{
 
-            if(conteo >= 11) {
+            if(conteo >= 1) {
                 return res.status(500).send({message: "Error al agregar equipo, Limite de equipos superado en una liga"})
             }
             modelo.save((err, team) => {

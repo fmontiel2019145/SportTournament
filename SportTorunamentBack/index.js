@@ -6,8 +6,9 @@ const UserModel = require("./src/Models/user.model");
 
 mongoose.Promise = global.Promise;
 //mongodb://localhost:27017/dbTorneo
+//mongodb+srv://TorneosDeporte:a1b2c3d4e5@cluster0.aavqv.mongodb.net/dbTorneosDeportes?retryWrites=true&w=majority
 mongoose
-    .connect("mongodb+srv://TorneosDeporte:a1b2c3d4e5@cluster0.aavqv.mongodb.net/dbTorneosDeportes?retryWrites=true&w=majority", {
+    .connect("mongodb://localhost:27017/dbTorneo", {
         useNewUrlParser: true,
         useUnifiedTopology: true,
     })

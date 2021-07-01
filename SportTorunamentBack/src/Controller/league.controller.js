@@ -1,4 +1,5 @@
 "use strict";
+const { response } = require('express');
 const leagueModel = require('../Models/league.model');
 var LeagueModel = require('../Models/league.model');
 
@@ -23,31 +24,48 @@ function getLeagues(req, res){
     }
 }
 
+
+
 function addLeague(req, res){
+    try{
     var params =  req.body;
     var idUsuario = req.user.sub;
     var data = req.user;
+    var liganame = params.name;
 
-    if(data.rol == "ADMIN" || (data.rol == "CLIENT" && data.sub == idUsuario)){
-        var insertModel = new LeagueModel({
-            name: params.name,
-            userCreator: idUsuario
-        });
-        insertModel.save((err, league) => {
-            if(err){
-                res.status(500).send({message: "Error en el servidor al integrar una liga a un usuario"});
-            }else{
-                if(league){
-                    res.status(200).send({message: "Se integró con exito", league});
-                }else{
-                    res.status(404).send({message: "Datos nulos como respuesta del servidor"});
+    if(data.rol == "ADMIN" || (data.rol == "CLIENT")){
+        LeagueModel.findOne({ userCreator : idUsuario,name: liganame}, (err, liga) => {
+                if(err){
+                    throw "Error en el servidor al obtener las ligas";
                 }
-            }
+       
+                if(liga!=null && liga.name == liganame){
+                res.status(200).send({message: "error ya existe una liga con este nombre", liga});   
+                }else{
+                    var insertModel = new LeagueModel({
+                        name: params.name,
+                        userCreator: idUsuario
+                    });
+                    insertModel.save((err, league) => {
+                        if(err){
+                            res.status(500).send({message: "Error en el servidor al integrar una liga a un usuario"});
+                        }else{
+                            if(league){
+                                res.status(200).send({message: "Se integró con exito", league});
+                            }else{
+                                res.status(404).send({message: "Datos nulos como respuesta del servidor"});
+                            }
+                        }
+                    });
+                }   
         });
-    }else{
-        console.log(idUsuario)
-        res.status(403).send({message: "No puedes agregar una liga"});
     }
+    return res;
+}catch(error)
+ {
+    return error;
+}
+
 }
 
 function editLeague(req, res){
