@@ -1,9 +1,11 @@
 "use strict";
 
+//Imports
 var jwt = require("jwt-simple");
 var moment = require("moment");
 var secret = "secret_password";
 
+//Functions
 exports.createToken = function (user) {
   var payload = {
     sub: user._id,

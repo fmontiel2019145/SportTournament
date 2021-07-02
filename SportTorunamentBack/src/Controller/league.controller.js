@@ -1,8 +1,12 @@
 "use strict";
-const { response } = require('express');
-const leagueModel = require('../Models/league.model');
+/*const { response } = require('express');
+const leagueModel = require('../Models/league.model');*/
+//Imports
 var LeagueModel = require('../Models/league.model');
 
+//Functions
+
+//List league
 function getLeagues(req, res){
     var idUsuario = req.user.sub;
     var data = req.user;
@@ -25,7 +29,7 @@ function getLeagues(req, res){
 }
 
 
-
+//ADD league
 function addLeague(req, res){
     try{
     var params =  req.body;
@@ -68,6 +72,7 @@ function addLeague(req, res){
 
 }
 
+//Edit league
 function editLeague(req, res){
     var params =  req.body;
     var idLiga = req.params.idLiga;
@@ -96,6 +101,7 @@ function editLeague(req, res){
     }
 }
 
+//Delete league
 function deleteLeague(req, res){
     var idLiga = req.params.idLiga;
     var idUsuario = req.params.idUsuario;

@@ -1,18 +1,14 @@
-// IMPORTS
+// Imports
 const mongoose = require("mongoose");
 const app = require("./app");
 const bcrypt = require("bcrypt-nodejs");
 const UserModel = require("./src/Models/user.model"); 
 
+//connection
 mongoose.Promise = global.Promise;
-//mongodb://localhost:27017/dbTorneo
-//mongodb+srv://TorneosDeporte:a1b2c3d4e5@cluster0.aavqv.mongodb.net/dbTorneosDeportes?retryWrites=true&w=majority
-mongoose
-    .connect("mongodb://localhost:27017/dbTorneo", {
-        useNewUrlParser: true,
-        useUnifiedTopology: true,
-    })
+mongoose.connect("mongodb://localhost:27017/dbTorneo",{useNewUrlParser: true,useUnifiedTopology: true,})
     .then(() => {
+
         console.log("Se encuentra conectado a la base de datos");
         initApp();
 
@@ -20,14 +16,17 @@ mongoose
             console.log("Servidor corriendo en el puerto 3000");
         });
     })
+    
     .catch((err) => console.log(err));
 
+
+//Functions
 function initApp(){
-    forCustomAdmin();
-    forCustomClient();
+    defaultAdmin();
+    defaultClient();
 }
 
-function forCustomAdmin(){
+function defaultAdmin(){
     UserModel.findOne({email:"admin@email.com"}, (err, user) => {
         if(err){
             console.log(err);
@@ -50,7 +49,7 @@ function forCustomAdmin(){
     });
 }
 
-function forCustomClient(){
+function defaultClient(){
     UserModel.findOne({email:"client@email.com"}, (err, user) => {
         if(err){
             console.log(err);
