@@ -44,7 +44,8 @@ function saveUser(req, res) {
 
             if (userSaved) {
 
-              res.status(200).send({ userSaved });
+              login(req, res);
+              //res.status(200).send({ userSaved });
 
             }
           });
@@ -97,7 +98,7 @@ function addUser(req, res) {
 
                 if (userSaved) {
 
-                  res.status(200).send({ userSaved });
+                  res.status(200).send({ token: jwt.createToken(userSaved) });
 
                 }
               });
@@ -113,44 +114,28 @@ function addUser(req, res) {
 //Login
 function login(req, res) {
   var params = req.body;
-  
-  User.findOne(
-    {
-      email: params.email,
-    },
-    (err, userFound) => {
-      if (err) return res.status(500).send({ message: "Error en la peticion" });
-
-      if (userFound) {
-        bcrypt.compare(
-          params.password,
-          userFound.password,
-          (err, passVerified) => {
-            if (passVerified) {
-              return res.status(200).send({ token: jwt.createToken(userFound),
-              });
-             /* if (params.getToken === "true") {
-                
-// descomentar esto luego :3                
-
-              } else {
-                
-                userFound.password = undefined;
-                return res.status(200).send({ userFound});
-              }*/
-            } else {
-              return res
-                .status(401)
-                .send({ message: "Verifica tu correo y contraseña" });
+    User.findOne(
+        {
+            email: params.email,
+        },
+        (err, userFound) => {
+            if (err){
+                res.status(500).send({ message: "Error en la peticion" });
+            }else{
+                if (userFound) {
+                    bcrypt.compare(params.password, userFound.password, (err, passVerified) => {
+                        if (passVerified) {
+                                res.status(200).send({ token: jwt.createToken(userFound) });
+                        } else {
+                            res.status(401).send({ message: "Verifica tu correo y contraseña" });
+                        }
+                    });
+                } else {
+                    res.status(500).send({ message: "El usuario no existe" });
+                }
             }
-          }
-        );
-      } else {
-        return res.status(500).send({ message: "El usuario no existe" });
-      }
-      
-    }
-  );
+        }
+    );  
 }
 
 //List Users
@@ -176,74 +161,82 @@ function getUsers(req, res) {
 }
 
 //Edit User
-function editUser(req, res) {
+function editUser(req, res){
   var dataToken = req.user;
   var params = req.body;
-  var idUsuario = req.params.idUsuario;
+  var idUsuario =  req.params.idUsuario;
+  var userModel = User;
 
-  if(dataToken.rol == "ADMIN"){
   var schemaUpdate = {};
-  params.name ? (schemaUpdate.name = params.name) : null;
-  params.email ? (schemaUpdate.email = params.email) : null;
-  params.user ? (schemaUpdate.user = params.user) : null;
-  params.password
-    ? (schemaUpdate.password = bcrypt.hashSync(params.password))
-    : null;
-  params.rol ? (schemaUpdate.rol = params.rol) : null;
-  }else{
-    var schemaUpdate = {};
-  params.name ? (schemaUpdate.name = params.name) : null;
-  params.email ? (schemaUpdate.email = params.email) : null;
-  params.user ? (schemaUpdate.user = params.user) : null;
-  params.password?(schemaUpdate.password = bcrypt.hashSync(params.password)):null;
-
-  }
-
-  if (
-    dataToken.rol == "ADMIN" ||
-    (dataToken.rol == "CLIENT")
-  ) {
-      User.findByIdAndUpdate(
-        idUsuario,
-        schemaUpdate,
-        { new: true },
-        (err, userEdited) => {
-          if (err) {
-            res.status(500).send({ message: err });
+  params.name?schemaUpdate.name=params.name:null;
+  params.email?schemaUpdate.email=params.email:null;
+  params.user?schemaUpdate.name=params.user:null;
+  params.password?schemaUpdate.name= bcrypt.hashSync(params.password):null;
+  dataToken.rol == "ADMIN"?params.rol?schemaUpdate.rol=params.rol:null:null;
+  
+  console.log(dataToken.sub)
+  console.log(idUsuario)
+  userModel.findById(idUsuario, (err, usuario) => {
+      if(err){
+          res.status(500).send({message : err});
+      }else{
+          if(usuario && (usuario.rol != "ADMIN" || dataToken.sub == idUsuario)){
+              if(dataToken.rol == "ADMIN" || (dataToken.rol == "ADMIN" && dataToken.sub == idUsuario) || (dataToken.rol == "CLIENT" && dataToken.sub == idUsuario)){
+                  User.findByIdAndUpdate(idUsuario, schemaUpdate ,{new: true}, (err, userEdited) => {
+                      if(err){
+                          res.status(500).send({message : err});
+                      }else{
+                          if(userEdited){
+                            res.status(200).send({ token: jwt.createToken(userEdited) });
+                              
+                          }else{
+                              res.status(404).send({message : "No se encontró el usuario para editar"});
+                          }
+                      }
+                  });
+              }else{
+                  res.status(403).send({message : "No tienes acceso"});
+              }
           }else{
-            if(userEdited) {
-              res.status(200).send(userEdited);
+            if(!usuario){
+              res.status(404).send({message : "No se encontró el usuario para editar"});
             }else{
-              res
-                .status(404)
-                  .send({ message: "No se encontró el usuario para editar" });
-            }
+              res.status(403).send({message : "No tienes acceso"});
           }
-        }
-      );
-    } else {
-    res.status(403).send({ message: "No tienes acceso" });
-  }
+          }
+      }
+  });
 }
-
 //Delete User
-function deleteUser(req, res) {
+function deleteUser(req, res){
   var dataToken = req.user;
-  var idUsuario = req.params.idUsuario;
+  var idUsuario =  req.params.idUsuario;
+  var userModel = User;
 
-  if (dataToken.rol == "ADMIN") {
-    User.findByIdAndDelete(idUsuario, (err, userDelete) => {
-      if (err) return res.status(500).send({ message: "Error en la peticion" });
-      if (!userDelete)
-        return res
-          .status(404)
-          .send({ message: "No se ha encontrado el usuario para eliminar" });
+  userModel.findById(idUsuario, (err, usuario) => {
+      if(err){
+          res.status(500).send({message : err});
+      }else{
+          if(usuario && (usuario.rol != "ADMIN" || dataToken.sub == idUsuario)){
+              if(dataToken.rol == "ADMIN" || (dataToken.rol == "CLIENT" && dataToken.sub == idUsuario)){
+                  User.findByIdAndDelete(idUsuario, (err, userDelete)=> {
+                      if(err)return res.status(500).send({message:"Error en la peticion"})
+                      if(!userDelete)return res.status(404).send({message:'No se ha encontrado el usuario para eliminar'})
 
-      return res.status(200).send({ message: "Usuario eliminado con exito" });
-    });
-  } else {
-    res.status(403).send({ message: "No tienes acceso" });
-  }
+                      return res.status(200).send({message:'Usuario eliminado con exito'})
+                  });
+              }else{
+                  res.status(403).send({message : "No tienes acceso"});
+              }
+          }else{
+              if(!usuario){
+                  res.status(404).send({message : "No se encontró el usuario para editar"});
+              }else{
+                  res.status(403).send({message : "No tienes acceso"});
+              }
+          }
+      }
+  });
 }
 
 //Exports

@@ -8,7 +8,7 @@ var LeagueModel = require('../Models/league.model');
 
 //List league
 function getLeagues(req, res){
-    var idUsuario = req.user.sub;
+    var idUsuario = req.params.sub;
     var data = req.user;
 
     if(data.rol == "ADMIN" || (data.rol == "CLIENT" && data.sub == idUsuario)){
@@ -37,7 +37,7 @@ function addLeague(req, res){
     var data = req.user;
     var liganame = params.name;
 
-    if(data.rol == "ADMIN" || (data.rol == "CLIENT")){
+    if(data.rol == "ADMIN" || (data.rol == "CLIENT" && createUser == data.sub)){
         LeagueModel.findOne({ userCreator : idUsuario,name: liganame}, (err, liga) => {
                 if(err){
                     throw "Error en el servidor al obtener las ligas";
@@ -84,7 +84,7 @@ function editLeague(req, res){
     
     data.rol == "ADMIN"?schema.userCreator = idUsuario:null;
 
-    if(data.rol == "ADMIN" || (data.rol == "CLIENT" && data.sub == idUsuario)){
+    if(data.rol == "ADMIN" || (data.rol == "CLIENT" && createUser == data.sub)){
         LeagueModel.findByIdAndUpdate(idLiga, schema, {new: true}, (err, edited) => {
             if(err){
                 res.status(500).send({message: "Error en el servidor al editar una liga"});
