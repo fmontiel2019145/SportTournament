@@ -193,7 +193,7 @@ function editUser(req, res){
                               res.status(404).send({message : "No se encontró el usuario para editar"});
                           }
                       }
-                      //a
+                      
                   });
               }else{
                   res.status(403).send({message : "No tienes acceso"});
